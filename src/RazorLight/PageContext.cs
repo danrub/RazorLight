@@ -1,31 +1,49 @@
-﻿using System.Dynamic;
+﻿using System.Collections.Generic;
+using System.Dynamic;
 using System.IO;
 
 namespace RazorLight
 {
 	public class PageContext : IPageContext
 	{
-		private dynamic _viewBag;
-
 		public PageContext()
 		{
-			_viewBag = new ExpandoObject();
+			ViewBag = new DefaultViewBag();
 			Writer = new StringWriter();
 		}
 
-		public PageContext(ExpandoObject viewBag)
+		public PageContext(IDynamicMetaObjectProvider viewBag)
 		{
-			_viewBag = viewBag ?? new ExpandoObject();
+			ViewBag = viewBag ?? new DefaultViewBag();
+			Writer = new StringWriter();
 		}
 
 		public TextWriter Writer { get; set; }
 
-		public dynamic ViewBag => _viewBag;
+		public dynamic ViewBag { get; }
 
 		public string ExecutingPageKey { get; set; }
 
 		public ModelTypeInfo ModelTypeInfo { get; set; }
 
 		public object Model { get; set; }
+
+
+		private class DefaultViewBag : DynamicObject
+		{
+			private readonly IDictionary<string, object> bag = new Dictionary<string,object>();
+
+			public override bool TryGetMember(GetMemberBinder binder, out object result)
+			{
+				bag.TryGetValue(binder.Name, out result);
+				return true;
+			}
+
+			public override bool TrySetMember(SetMemberBinder binder, object value)
+			{
+				bag[binder.Name] = value;
+				return true;
+			}
+		}
 	}
 }
