@@ -9,14 +9,14 @@ namespace RazorLight.Extensions
 {
 	public static class TypeExtensions
 	{
-		public static ExpandoObject ToExpando(this object anonymousObject)
+		public static DefaultViewBag ToExpando(this object anonymousObject)
 		{
-			if (anonymousObject is ExpandoObject exp)
+			if (anonymousObject is IDictionary<string, object> exp)
 			{
-				return exp;
+				return new DefaultViewBag(exp);
 			}
 
-			IDictionary<string, object> expando = new ExpandoObject();
+			IDictionary<string, object> expando = new Dictionary<string, object>();
 			foreach (var propertyDescriptor in anonymousObject.GetType().GetTypeInfo().GetProperties())
 			{
 				var obj = propertyDescriptor.GetValue(anonymousObject);
@@ -27,7 +27,7 @@ namespace RazorLight.Extensions
 				expando.Add(propertyDescriptor.Name, obj);
 			}
 
-			return (ExpandoObject)expando;
+			return new DefaultViewBag(expando);
 		}
 
 		public static bool IsAnonymousType(this Type type)

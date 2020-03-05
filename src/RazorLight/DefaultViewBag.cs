@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Dynamic;
 
 namespace RazorLight
@@ -22,6 +23,11 @@ namespace RazorLight
 		{
 			bag[binder.Name] = value;
 			return true;
+		}
+
+		public static implicit operator ReadOnlyDictionary<string, object>(DefaultViewBag viewBag)
+		{
+			return new ReadOnlyDictionary<string, object>(viewBag.bag);
 		}
 	}
 }

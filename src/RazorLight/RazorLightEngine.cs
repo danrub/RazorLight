@@ -19,7 +19,7 @@ namespace RazorLight
 		public IEngineHandler Handler => _handler;
 
 		[Obsolete("Please, use generic version of CompileRenderAsync", true)]
-		public Task<string> CompileRenderAsync(string key, object model, Type modelType, ExpandoObject viewBag = null)
+		public Task<string> CompileRenderAsync(string key, object model, Type modelType, IDynamicMetaObjectProvider viewBag = null)
 		{
 			throw new NotImplementedException();
 		}
@@ -30,25 +30,25 @@ namespace RazorLight
 			string content,
 			object model,
 			Type modelType,
-			ExpandoObject viewBag = null)
+			IDynamicMetaObjectProvider viewBag = null)
 		{
 			throw new NotImplementedException();
 		}
 
 		[Obsolete("Please, use generic version of RenderTemplateAsync", true)]
-		public Task<string> RenderTemplateAsync(ITemplatePage templatePage, object model, Type modelType, ExpandoObject viewBag = null)
+		public Task<string> RenderTemplateAsync(ITemplatePage templatePage, object model, Type modelType, IDynamicMetaObjectProvider viewBag = null)
 		{
 			throw new NotImplementedException();
 		}
 
 		[Obsolete("Please, use generic version of RenderTemplateAsync", true)]
-		public Task RenderTemplateAsync(ITemplatePage templatePage, object model, Type modelType, TextWriter textWriter, ExpandoObject viewBag = null)
+		public Task RenderTemplateAsync(ITemplatePage templatePage, object model, Type modelType, TextWriter textWriter, IDynamicMetaObjectProvider viewBag = null)
 		{
 			throw new NotImplementedException();
 		}
 
 		/// <inheritdoc cref="IRazorLightEngine"/>
-		public Task<string> CompileRenderAsync<T>(string key, T model, ExpandoObject viewBag = null)
+		public Task<string> CompileRenderAsync<T>(string key, T model, IDynamicMetaObjectProvider viewBag = null)
 		{
 			return _handler.CompileRenderAsync(key, model, viewBag);
 		}
@@ -58,7 +58,7 @@ namespace RazorLight
 			string key,
 			string content,
 			T model,
-			ExpandoObject viewBag = null)
+			IDynamicMetaObjectProvider viewBag = null)
 		{
 			return _handler.CompileRenderStringAsync(key, content, model, viewBag);
 		}
@@ -70,7 +70,7 @@ namespace RazorLight
 		}
 
 		/// <inheritdoc cref="IRazorLightEngine"/>
-		public Task<string> RenderTemplateAsync<T>(ITemplatePage templatePage, T model, ExpandoObject viewBag = null)
+		public Task<string> RenderTemplateAsync<T>(ITemplatePage templatePage, T model, IDynamicMetaObjectProvider viewBag = null)
 		{
 			return _handler.RenderTemplateAsync(templatePage, model, viewBag);
 		}
@@ -87,7 +87,7 @@ namespace RazorLight
 			ITemplatePage templatePage,
 			T model,
 			TextWriter textWriter,
-			ExpandoObject viewBag = null)
+			IDynamicMetaObjectProvider viewBag = null)
 		{
 			return _handler.RenderTemplateAsync(templatePage, model, textWriter, viewBag);
 		}

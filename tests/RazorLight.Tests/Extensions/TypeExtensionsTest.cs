@@ -2,6 +2,7 @@
 using RazorLight.Tests.Models;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Dynamic;
 using Xunit;
 
@@ -12,11 +13,11 @@ namespace RazorLight.Tests.Extensions
 		[Fact]
 		public void ToExpando_Returns_ExpandoObject_If_Passed()
 		{
-			var expando = new ExpandoObject();
+			var expando = new DefaultViewBag();
 
 			var obj = expando.ToExpando();
 
-			Console.WriteLine(expando.GetType() == typeof(ExpandoObject));
+			Console.WriteLine(obj.GetType() == typeof(DefaultViewBag));
 		}
 
 		[Fact]
@@ -28,7 +29,7 @@ namespace RazorLight.Tests.Extensions
 				Age = 18
 			};
 
-			IDictionary<string, object> expando = obj.ToExpando();
+			ReadOnlyDictionary<string, object> expando = obj.ToExpando();
 
 			Assert.True(expando.ContainsKey("Name"));
 			Assert.True(expando.ContainsKey("Age"));

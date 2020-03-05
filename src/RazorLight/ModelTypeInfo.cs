@@ -50,8 +50,8 @@ namespace RazorLight
 			}
 
 			this.Type = type;
-			this.IsStrongType = type != typeof(ExpandoObject) && !Type.IsAnonymousType();
-			this.TemplateType = IsStrongType ? Type : typeof(ExpandoObject);
+			this.IsStrongType = !typeof(IDynamicMetaObjectProvider).IsAssignableFrom(type) && !Type.IsAnonymousType();
+			this.TemplateType = IsStrongType ? Type : typeof(IDynamicMetaObjectProvider);
 			this.TemplateTypeName = IsStrongType ? GetFriendlyName(Type) : "dynamic";
 		}
 
