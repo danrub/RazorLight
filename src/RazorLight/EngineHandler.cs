@@ -72,7 +72,7 @@ namespace RazorLight
 		/// <param name="modelType">Type of the model</param>
 		/// <param name="viewBag">Dynamic viewBag of the template</param>
 		/// <returns>Rendered string</returns>
-		public async Task<string> RenderTemplateAsync<T>(ITemplatePage templatePage, T model, ExpandoObject viewBag = null)
+		public async Task<string> RenderTemplateAsync<T>(ITemplatePage templatePage, T model, IDynamicMetaObjectProvider viewBag = null)
 		{
 			using (var writer = new StringWriter())
 			{
@@ -94,7 +94,7 @@ namespace RazorLight
 			ITemplatePage templatePage,
 			T model,
 			TextWriter textWriter,
-			ExpandoObject viewBag = null)
+			IDynamicMetaObjectProvider viewBag = null)
 		{
 			SetModelContext(templatePage, textWriter, model, viewBag);
 
@@ -109,7 +109,7 @@ namespace RazorLight
 			ITemplatePage templatePage,
 			T model,
 			TextWriter textWriter,
-			ExpandoObject viewBag,
+			IDynamicMetaObjectProvider viewBag,
 			TemplateRenderer templateRenderer)
 		{
 			SetModelContext(templatePage, textWriter, model, viewBag);
@@ -126,7 +126,7 @@ namespace RazorLight
 		/// <param name="modelType">Type of the model</param>
 		/// <param name="viewBag">Dynamic ViewBag (can be null)</param>
 		/// <returns></returns>
-		public async Task<string> CompileRenderAsync<T>(string key, T model, ExpandoObject viewBag = null)
+		public async Task<string> CompileRenderAsync<T>(string key, T model, IDynamicMetaObjectProvider viewBag = null)
 		{
 			ITemplatePage template = await CompileTemplateAsync(key).ConfigureAwait(false);
 
@@ -145,7 +145,7 @@ namespace RazorLight
 			string key,
 			string content,
 			T model,
-			ExpandoObject viewBag = null)
+			IDynamicMetaObjectProvider viewBag = null)
 		{
 			if (string.IsNullOrEmpty(key))
 			{
@@ -165,7 +165,7 @@ namespace RazorLight
 			ITemplatePage templatePage,
 			TextWriter textWriter,
 			T model,
-			ExpandoObject viewBag)
+			IDynamicMetaObjectProvider viewBag)
 		{
 			if (textWriter == null)
 			{
