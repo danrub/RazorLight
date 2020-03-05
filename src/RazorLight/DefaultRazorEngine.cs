@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc.Razor.Extensions;
 using Microsoft.AspNetCore.Razor.Language;
 using Microsoft.AspNetCore.Razor.Language.Extensions;
@@ -25,6 +26,13 @@ namespace RazorLight
 					   NamespaceDirective.Register(builder);
 					   FunctionsDirective.Register(builder);
 					   InheritsDirective.Register(builder);
+					   SectionDirective.Register(builder);
+				   }
+
+				   //workaround till https://github.com/toddams/RazorLight/issues/308 closed
+				   if (!builder.Features.OfType<SectionDirectivePass>().Any())
+				   // the only reason this would be null is if SectionDirective.Register(builder) above never gets hit
+				   {
 					   SectionDirective.Register(builder);
 				   }
 
