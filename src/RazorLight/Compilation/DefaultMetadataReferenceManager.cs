@@ -62,7 +62,7 @@ namespace RazorLight.Compilation
 			}
 			else
 			{
-				references = dependencyContext.CompileLibraries.SelectMany(library => library.ResolveReferencePaths(CustomCompilationAssemblyResolver));
+				references = dependencyContext.CompileLibraries.SelectMany(library => CustomCompilationAssemblyResolver is null ? library.ResolveReferencePaths() : library.ResolveReferencePaths(CustomCompilationAssemblyResolver));
 
 				if (!references.Any())
 				{

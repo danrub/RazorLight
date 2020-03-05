@@ -45,7 +45,7 @@ namespace RazorLight.Tests
 			var model = new { Title = "Johny" };
 			var info = new ModelTypeInfo(model.GetType());
 
-			Assert.Equal(typeof(ExpandoObject), info.TemplateType);
+			Assert.Equal(typeof(IDynamicMetaObjectProvider), info.TemplateType);
 		}
 
 		[Fact]
