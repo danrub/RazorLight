@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using Microsoft.Extensions.DependencyModel.Resolution;
 using RazorLight.Caching;
 using RazorLight.Compilation;
 using RazorLight.Generation;
@@ -27,6 +28,8 @@ namespace RazorLight
 		protected RazorLightProject project;
 
 		protected ICachingProvider cachingProvider;
+
+		protected IEnumerable<ICompilationAssemblyResolver> customResolvers;
 
 		private bool disableEncoding = false;
 
@@ -216,6 +219,12 @@ namespace RazorLight
 			return this;
 		}
 
+		public virtual RazorLightEngineBuilder SetCustomCompilationAssemblyResolvers(IEnumerable<ICompilationAssemblyResolver> customResolvers)
+		{
+			this.customResolvers = customResolvers ?? throw new ArgumentNullException(nameof(customResolvers));
+			return this;
+		}
+
 		public virtual RazorLightEngine Build()
 		{
 			var options = new RazorLightOptions();
@@ -251,9 +260,9 @@ namespace RazorLight
 			}
 
 			options.DisableEncoding = disableEncoding;
+			options.CompilationAssemblyResolvers = customResolvers;
 
-
-			var metadataReferenceManager = new DefaultMetadataReferenceManager(options.AdditionalMetadataReferences, options.ExcludedAssemblies);
+			var metadataReferenceManager = new DefaultMetadataReferenceManager(options.AdditionalMetadataReferences, options.ExcludedAssemblies, options.CompilationAssemblyResolvers);
 			var assembly = operatingAssembly ?? Assembly.GetEntryAssembly();
 			var compiler = new RoslynCompilationService(metadataReferenceManager, assembly);
 

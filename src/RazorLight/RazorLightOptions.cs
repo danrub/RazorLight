@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System;
 using RazorLight.Caching;
+using Microsoft.Extensions.DependencyModel.Resolution;
 
 namespace RazorLight
 {
@@ -25,6 +26,8 @@ namespace RazorLight
 		public HashSet<MetadataReference> AdditionalMetadataReferences { get; set; }
 
 		public HashSet<string> ExcludedAssemblies { get; set; }
+
+		public IEnumerable<ICompilationAssemblyResolver> CompilationAssemblyResolvers { get; set; }
 
 		public virtual IList<Action<ITemplatePage>> PreRenderCallbacks { get; set; }
 

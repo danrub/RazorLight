@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyModel;
 using System.Linq;
 using System.IO;
 using System.Reflection.PortableExecutable;
+using Microsoft.Extensions.DependencyModel.Resolution;
 
 namespace RazorLight.Compilation
 {
@@ -14,6 +15,7 @@ namespace RazorLight.Compilation
 	{
 		public HashSet<MetadataReference> AdditionalMetadataReferences { get; }
 		public HashSet<string> ExcludedAssemblies { get; }
+		public ICompilationAssemblyResolver CustomCompilationAssemblyResolver { get; }
 
 		public DefaultMetadataReferenceManager()
 		{
@@ -27,10 +29,18 @@ namespace RazorLight.Compilation
 			ExcludedAssemblies = new HashSet<string>();
 		}
 
-		public DefaultMetadataReferenceManager(HashSet<MetadataReference> metadataReferences, HashSet<string> excludedAssemblies)
+		public DefaultMetadataReferenceManager(HashSet<MetadataReference> metadataReferences, HashSet<string> excludedAssemblies, IEnumerable<ICompilationAssemblyResolver> customResolvers = default)
 		{
 			AdditionalMetadataReferences = metadataReferences ?? throw new ArgumentNullException(nameof(metadataReferences));
 			ExcludedAssemblies = excludedAssemblies ?? throw new ArgumentNullException(nameof(excludedAssemblies));
+			CustomCompilationAssemblyResolver = new CompositeCompilationAssemblyResolver(new ICompilationAssemblyResolver[]
+														{
+																new AppBaseCompilationAssemblyResolver(),
+																new ReferenceAssemblyPathResolver(),
+																new PackageCompilationAssemblyResolver()
+														}
+														.Concat(customResolvers ?? Enumerable.Empty<ICompilationAssemblyResolver>())
+														.ToArray());
 		}
 
 		public IReadOnlyList<MetadataReference> Resolve(Assembly assembly)
@@ -52,7 +62,7 @@ namespace RazorLight.Compilation
 			}
 			else
 			{
-				references = dependencyContext.CompileLibraries.SelectMany(library => library.ResolveReferencePaths());
+				references = dependencyContext.CompileLibraries.SelectMany(library => library.ResolveReferencePaths(CustomCompilationAssemblyResolver));
 
 				if (!references.Any())
 				{
