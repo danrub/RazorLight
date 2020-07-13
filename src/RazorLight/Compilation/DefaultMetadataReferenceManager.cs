@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using Microsoft.CodeAnalysis;
-using System.Reflection;
-using Microsoft.Extensions.DependencyModel;
-using System.Linq;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Reflection.PortableExecutable;
+
+using Microsoft.CodeAnalysis;
+using Microsoft.Extensions.DependencyModel;
 using Microsoft.Extensions.DependencyModel.Resolution;
 
 namespace RazorLight.Compilation
@@ -45,19 +45,19 @@ namespace RazorLight.Compilation
 
 		public IReadOnlyList<MetadataReference> Resolve(Assembly assembly)
 		{
-			var dependencyContext = DependencyContext.Load(assembly);
+			DependencyContext dependencyContext = DependencyContext.Load(assembly);
 
 			return Resolve(assembly, dependencyContext);
 		}
 
 		internal IReadOnlyList<MetadataReference> Resolve(Assembly assembly, DependencyContext dependencyContext)
 		{
-			var libraryPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			HashSet<string> libraryPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 			IEnumerable<string> references = null;
 			if (dependencyContext == null)
 			{
-				var context = new HashSet<string>();
-				var x = GetReferencedAssemblies(assembly, ExcludedAssemblies, context).Union(new Assembly[] { assembly }).ToArray();
+				HashSet<string> context = new HashSet<string>();
+				Assembly[] x = GetReferencedAssemblies(assembly, ExcludedAssemblies, context).Union(new Assembly[] { assembly }).ToArray();
 				references = x.Select(p => AssemblyDirectory(p));
 			}
 			else
@@ -71,16 +71,16 @@ namespace RazorLight.Compilation
 				}
 			}
 
-			var metadataRerefences = new List<MetadataReference>();
+			List<MetadataReference> metadataRerefences = new List<MetadataReference>();
 
-			foreach (var reference in references)
+			foreach (string reference in references)
 			{
 				if (libraryPaths.Add(reference))
 				{
-					using (var stream = File.OpenRead(reference))
+					using (FileStream stream = File.OpenRead(reference))
 					{
-						var moduleMetadata = ModuleMetadata.CreateFromStream(stream, PEStreamOptions.PrefetchMetadata);
-						var assemblyMetadata = AssemblyMetadata.Create(moduleMetadata);
+						ModuleMetadata moduleMetadata = ModuleMetadata.CreateFromStream(stream, PEStreamOptions.PrefetchMetadata);
+						AssemblyMetadata assemblyMetadata = AssemblyMetadata.Create(moduleMetadata);
 
 						metadataRerefences.Add(assemblyMetadata.GetReference(filePath: reference));
 					}
@@ -103,14 +103,14 @@ namespace RazorLight.Compilation
 				yield break;
 			}
 
-			foreach (var assemblyRef in a.GetReferencedAssemblies())
+			foreach (AssemblyName assemblyRef in a.GetReferencedAssemblies())
 			{
 				if (visitedAssemblies.Contains(assemblyRef.EscapedCodeBase)) { continue; }
 
 				if (excludedAssemblies.Any(s => s.Contains(assemblyRef.Name))) { continue; }
-				var loadedAssembly = Assembly.Load(assemblyRef);
+				Assembly loadedAssembly = Assembly.Load(assemblyRef);
 				yield return loadedAssembly;
-				foreach (var referenced in GetReferencedAssemblies(loadedAssembly, excludedAssemblies, visitedAssemblies))
+				foreach (Assembly referenced in GetReferencedAssemblies(loadedAssembly, excludedAssemblies, visitedAssemblies))
 				{
 					yield return referenced;
 				}
@@ -118,11 +118,6 @@ namespace RazorLight.Compilation
 			}
 		}
 
-		private static string AssemblyDirectory(Assembly assembly)
-		{
-			string codeBase = assembly.CodeBase;
-			UriBuilder uri = new UriBuilder(codeBase);
-			return Uri.UnescapeDataString(uri.Path);
-		}
+		private static string AssemblyDirectory(Assembly assembly) => assembly.Location;
 	}
 }
